@@ -119,17 +119,32 @@ int main() {
 	/*Store Vertex Data on Graphics Card*/
 	/*--------------------*/
 
-	//created bertex buffer
+	//created vertex buffer and vertex arrray 
+	unsigned int VAO; 
+	glGenVertexArrays(1, &VAO); 
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
+
+	glBindVertexArray(VAO); 
 
 	//binds created buffer to GL_ARRAY_Buffer 
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 
 	//copy user defined data into the bounded buffer 
-	//first arg is the buffer, second is size of data, thrid is acutal data, fourth is how to manage data (stream, static, dynamic)
-	//static = data is sent once and used many times 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    //first arg is the buffer, second is size of data, thrid is acutal data, fourth is how to manage data (stream, static, dynamic)
+    //static = data is sent once and used many times 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); 
+	 
+
+	// 0 = specifies location of position vertex attribute in vertex shader. 
+	//3 = Composed of 3 values. Vec3 
+	//type of data is GL_FLOAT
+	//Do want data normalized? If, NO then GL_FALSE 
+	//specifies stride which is how far away the next set of values are. 
+	//position offset if data is not right at beggining of array. Void *  0 for this case 
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0); 
+
 
 	/*--------------------*/
 
@@ -154,6 +169,12 @@ int main() {
 
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); //sets color state 
 		glClear(GL_COLOR_BUFFER_BIT);         //retrieve color state and use in buffer
+
+		//render 
+		glUseProgram(shaderProgram);
+		glBindVertexArray(VAO);
+		glDrawArrays(GL_TRIANGLES,0,3);
+
 
 
 		//check and call events and swap the buffers 
