@@ -117,7 +117,7 @@ int main() {
 
 
 	//single triangle coordinates. Normalized (-1 to 1) 
-	float vertices[]{
+	float firstTrivertices[]{
 
 		//-0.5f,-0.5f,0.0f,
 	//	0.5f,-0.5f,0.0f,
@@ -126,14 +126,17 @@ int main() {
 		-.5f,-.5f,0.0f,
 		-.25f, 0.5f, 0.0f,
 		0.0f, -0.5f, 0.0f,
-
-		0.0,-0.5f, 0.0f,
-		0.25f, 0.5f, 0.0f,
-		0.5f, - 0.5f, 0.0f
 		
 
 
 	}; 
+
+	float secondTrivertices[]{
+		0.0,-0.5f, 0.0f,
+		0.25f, 0.5f, 0.0f,
+		0.5f, -0.5f, 0.0f
+
+	};
 
 
 	// Box (Two Triangles) 
@@ -155,21 +158,42 @@ int main() {
 	/*Store Vertex Data on Graphics Card*/
 	/*--------------------*/
 
-	//created vertex buffer and vertex arrray 
-	unsigned int VAO; 
-	glGenVertexArrays(1, &VAO); 
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
+	//created vertex buffer and vertex arrray  
 
-	glBindVertexArray(VAO); 
+	unsigned int VAOs[2], VBOs[2];   //Can generate several VAO nad VBOs at the same  time
+
+	glGenVertexArrays(2, VAOs); 
+	glGenBuffers(2, VBOs);
+
+	glBindVertexArray(VAOs[0]);  
 
 	//binds created buffer to GL_ARRAY_Buffer 
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[0]);
 
 	//copy user defined data into the bounded buffer 
     //first arg is the buffer, second is size of data, thrid is acutal data, fourth is how to manage data (stream, static, dynamic)
     //static = data is sent once and used many times 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(firstTrivertices), firstTrivertices, GL_STATIC_DRAW); 
+
+	// 0 = specifies location of position vertex attribute in vertex shader. 
+	//3 = Composed of 3 values. Vec3 
+	//type of data is GL_FLOAT
+	//Do want data normalized? If, NO then GL_FALSE 
+	//specifies stride which is how far away the next set of values are. 
+	//position offset if data is not right at beggining of array. Void *  0 for this case 
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); 
+	glEnableVertexAttribArray(0); 
+
+
+	glBindVertexArray(VAOs[1]);
+	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(secondTrivertices), secondTrivertices, GL_STATIC_DRAW); 
+
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); 
+	glEnableVertexAttribArray(0); 
+
+
+
 
 	/*Creating EBO*/
 	unsigned int EBO; 
@@ -179,14 +203,7 @@ int main() {
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
 	 
 
-	// 0 = specifies location of position vertex attribute in vertex shader. 
-	//3 = Composed of 3 values. Vec3 
-	//type of data is GL_FLOAT
-	//Do want data normalized? If, NO then GL_FALSE 
-	//specifies stride which is how far away the next set of values are. 
-	//position offset if data is not right at beggining of array. Void *  0 for this case 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0); 
+	
 
 
 	/*--------------------*/
@@ -215,17 +232,25 @@ int main() {
 
 		//render 
 		glUseProgram(shaderProgram);
-		glBindVertexArray(VAO);
+		glBindVertexArray(VAOs[0]);
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
 		//glBindVertexArray(0); 
-		glDrawArrays(GL_TRIANGLES,0,6);                     //third parameter determines the number of vertices to render
+		glDrawArrays(GL_TRIANGLES,0,3);                     //third parameter determines the number of vertices to render
 
-
+		glBindVertexArray(VAOs[1]); 
+		glDrawArrays(GL_TRIANGLES, 0, 3); 
 
 		//check and call events and swap the buffers 
 		glfwSwapBuffers(window);         
 		glfwPollEvents();                 //checks for input/event triggers 
 	}
+
+
+	//de-alocate recources 
+	glDeleteVertexArrays(2, VAOs); 
+	glDeleteBuffers(2, VBOs); 
+	glDeleteProgram(shaderProgram); 
+
 
 
 	//clean/delete GLFW resources 
