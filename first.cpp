@@ -25,6 +25,13 @@ const char* fragmentShaderSource = "#version 330 core\n"
    // "   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
 	"}\n\0";
 
+const char* fragmentShaderSource2 = "#version 330 core\n"
+"out vec4 FragColor;\n"
+"void main()\n"
+"{\n"
+"   FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);\n"
+"}\n\0";
+
 
 
 int main() {
@@ -112,9 +119,37 @@ int main() {
 	//single triangle coordinates. Normalized (-1 to 1) 
 	float vertices[]{
 
-		-0.5f,-0.5f,0.0f,
-		0.5f,-0.5f,0.0f,
-		0.0f,0.5f,0.0f
+		//-0.5f,-0.5f,0.0f,
+	//	0.5f,-0.5f,0.0f,
+	//	0.0f,0.5f,0.0f,
+
+		-.5f,-.5f,0.0f,
+		-.25f, 0.5f, 0.0f,
+		0.0f, -0.5f, 0.0f,
+
+		0.0,-0.5f, 0.0f,
+		0.25f, 0.5f, 0.0f,
+		0.5f, - 0.5f, 0.0f
+		
+
+
+	}; 
+
+
+	// Box (Two Triangles) 
+	//float vertices[]{
+	//	0.5f,   0.5f, 0.0f,
+	//	0.5f,  -0.5f, 0.0f,
+	//	-0.5f, -0.5f, 0.0f,
+	//	-0.5f,  0.5f, 0.0f
+
+
+
+	//};
+
+	unsigned int indices[]{
+		0,1,3,   //first triangle 
+		1,2,3    // second triangle 
 	};
 
 	/*Store Vertex Data on Graphics Card*/
@@ -135,6 +170,13 @@ int main() {
     //first arg is the buffer, second is size of data, thrid is acutal data, fourth is how to manage data (stream, static, dynamic)
     //static = data is sent once and used many times 
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); 
+
+	/*Creating EBO*/
+	unsigned int EBO; 
+	glGenBuffers(1, &EBO); 
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO); 
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW); 
 	 
 
 	// 0 = specifies location of position vertex attribute in vertex shader. 
@@ -174,7 +216,9 @@ int main() {
 		//render 
 		glUseProgram(shaderProgram);
 		glBindVertexArray(VAO);
-		glDrawArrays(GL_TRIANGLES,0,3);
+		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
+		//glBindVertexArray(0); 
+		glDrawArrays(GL_TRIANGLES,0,6);                     //third parameter determines the number of vertices to render
 
 
 
