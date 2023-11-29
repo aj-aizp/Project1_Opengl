@@ -134,10 +134,17 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\Downloads\glad.c" />
     <ClCompile Include="first.cpp" />
-    <ClCompile Include="shader.cpp" />
+    <ClCompile Include="shaderClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fragment_shader1.txt" />
+    <None Include="vertex_shader1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="fragment_shader2.txt" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

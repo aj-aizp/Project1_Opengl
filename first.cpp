@@ -2,6 +2,8 @@
 #include <GLFW/glfw3.h>
 #include <string>
 #include <iostream>
+
+#include "Shader.h"
 //using namespace std;
 
 
@@ -70,97 +72,90 @@ int main() {
 		return -1; 
 	}
 
+	//two different shader objects that use different fragment shaders 
 
+	Shader ourShader1("vertex_shader1.txt","fragment_shader1.txt");   
+
+	Shader ourShader2("vertex_shader1.txt","fragment_shader2.txt"); 
 
 
 	//VertexShader 
 	/*--------------------*/
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
+	//unsigned int vertexShader;
+	//vertexShader = glCreateShader(GL_VERTEX_SHADER);
 
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader); 
+	//glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
+	//glCompileShader(vertexShader); 
 
-	//check for compile errors
-	int success; 
-	char infoLog[512]; 
-	glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
+	////check for compile errors
+	//int success; 
+	//char infoLog[512]; 
+	//glGetShaderiv(vertexShader, GL_COMPILE_STATUS, &success);
 
-	if (!success)
-	{	
-		glGetShaderInfoLog(vertexShader, 512, NULL, infoLog); 
-		std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl; 
-	}
+	//if (!success)
+	//{	
+	//	glGetShaderInfoLog(vertexShader, 512, NULL, infoLog); 
+	//	std::cout << "ERROR::SHADER::VERTEX::COMPILATION_FAILED\n" << infoLog << std::endl; 
+	//}
 
-	//FragmentShader 
-    /*--------------------*/
-	unsigned int fragmentShader[2]; 
-
-
-	fragmentShader[0] = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader[0], 1, &fragmentShaderSource1, NULL);  //replaces source code in a shader object 
-	glCompileShader(fragmentShader[0]);
-
-	if (!success)
-	{
-		glGetShaderInfoLog(fragmentShader[0], 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
-	}
-
-	fragmentShader[1] = glCreateShader(GL_FRAGMENT_SHADER); 
-
-	glShaderSource(fragmentShader[1], 1, &fragmentShaderSource2, NULL);  //replaces source code in a shader object  
-	glCompileShader(fragmentShader[1]); 
-
-	if (!success) 
-	{ 
-		glGetShaderInfoLog(fragmentShader[1], 512, NULL, infoLog); 
-		std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl; 
-	} 
+	////FragmentShader 
+ //   /*--------------------*/
+	//unsigned int fragmentShader[2]; 
 
 
+	//fragmentShader[0] = glCreateShader(GL_FRAGMENT_SHADER);
+	//glShaderSource(fragmentShader[0], 1, &fragmentShaderSource1, NULL);  //replaces source code in a shader object 
+	//glCompileShader(fragmentShader[0]);
+
+	//if (!success)
+	//{
+	//	glGetShaderInfoLog(fragmentShader[0], 512, NULL, infoLog);
+	//	std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl;
+	//}
+
+	//fragmentShader[1] = glCreateShader(GL_FRAGMENT_SHADER); 
+
+	//glShaderSource(fragmentShader[1], 1, &fragmentShaderSource2, NULL);  //replaces source code in a shader object  
+	//glCompileShader(fragmentShader[1]); 
+
+	//if (!success) 
+	//{ 
+	//	glGetShaderInfoLog(fragmentShader[1], 512, NULL, infoLog); 
+	//	std::cout << "ERROR::SHADER::FRAGMENT::COMPILATION_FAILED\n" << infoLog << std::endl; 
+	//} 
 
 
+	////Linking Shaders. Links output of each shader to the inputs of the next shader 
+	//unsigned int shaderProgram[2];  
 
+	//shaderProgram[0] = glCreateProgram();  //returns ID referance to program 
+	//glAttachShader(shaderProgram[0], vertexShader);
+	//glAttachShader(shaderProgram[0], fragmentShader[0]);
+	//glLinkProgram(shaderProgram[0]);
 
+	//// check for linking errors
+	//glGetProgramiv(shaderProgram[0], GL_LINK_STATUS, &success);
+	//if (!success) {
+	//	glGetProgramInfoLog(shaderProgram[0], 512, NULL, infoLog);
+	//	std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
+	//}
 
-	//Linking Shaders. Links output of each shader to the inputs of the next shader 
-	unsigned int shaderProgram[2];  
+	//shaderProgram[1] = glCreateProgram(); 
+	//glAttachShader(shaderProgram[1], vertexShader); 
+	//glAttachShader(shaderProgram[1], fragmentShader[1]);
+	//glLinkProgram(shaderProgram[1]); 
 
-	shaderProgram[0] = glCreateProgram();  //returns ID referance to program 
-	glAttachShader(shaderProgram[0], vertexShader);
-	glAttachShader(shaderProgram[0], fragmentShader[0]);
-	glLinkProgram(shaderProgram[0]);
+	//// check for linking errors
+	//glGetProgramiv(shaderProgram[1], GL_LINK_STATUS, &success); 
+	//if (!success) { 
+	//	glGetProgramInfoLog(shaderProgram[1], 512, NULL, infoLog); 
+	//	std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl; 
+	//} 
 
-	// check for linking errors
-	glGetProgramiv(shaderProgram[0], GL_LINK_STATUS, &success);
-	if (!success) {
-		glGetProgramInfoLog(shaderProgram[0], 512, NULL, infoLog);
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl;
-	}
-
-	shaderProgram[1] = glCreateProgram(); 
-	glAttachShader(shaderProgram[1], vertexShader); 
-	glAttachShader(shaderProgram[1], fragmentShader[1]);
-	glLinkProgram(shaderProgram[1]); 
-
-	// check for linking errors
-	glGetProgramiv(shaderProgram[1], GL_LINK_STATUS, &success); 
-	if (!success) { 
-		glGetProgramInfoLog(shaderProgram[1], 512, NULL, infoLog); 
-		std::cout << "ERROR::SHADER::PROGRAM::LINKING_FAILED\n" << infoLog << std::endl; 
-	} 
-
-
-
-
-
-
-
-	//can delete shader objects after linking 
-	glDeleteShader(vertexShader); 
-	glDeleteShader(fragmentShader[0]);
-	glDeleteShader(fragmentShader[1]); 
+	////can delete shader objects after linking 
+	//glDeleteShader(vertexShader); 
+	//glDeleteShader(fragmentShader[0]);
+	//glDeleteShader(fragmentShader[1]); 
 
 
 	//single triangle coordinates. Normalized (-1 to 1) 
@@ -277,7 +272,8 @@ int main() {
 		glClear(GL_COLOR_BUFFER_BIT);         //retrieve color state and use in buffer
 
 		//render 
-		glUseProgram(shaderProgram[0]);
+		ourShader1.use(); 
+		//glUseProgram(shaderProgram[0]);
 		glBindVertexArray(VAOs[0]);
 		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
 		//glBindVertexArray(0); 
@@ -286,10 +282,11 @@ int main() {
 
 		float timeVal = glfwGetTime(); 
 		float greenValue = (sin(timeVal) / 2.0f) + 0.5f;
-		int vertexColorLoc = glGetUniformLocation(shaderProgram[1], "ourColor"); //get location of variable in shader
+		int vertexColorLoc = glGetUniformLocation(ourShader2.ID, "ourColor"); //get location of variable in shader
 
 
-		glUseProgram(shaderProgram[1]); 
+		ourShader2.use();
+		//glUseProgram(shaderProgram[1]); 
 		glUniform4f(vertexColorLoc, 0.0f, greenValue, 0.0f, 1.0f);   //add green value to uniform variable in shader. Shaderprogram must be in use to be able to change uniform value.
 		glBindVertexArray(VAOs[1]); 
 		glDrawArrays(GL_TRIANGLES, 0, 3); 
@@ -303,8 +300,8 @@ int main() {
 	//de-alocate recources 
 	glDeleteVertexArrays(2, VAOs); 
 	glDeleteBuffers(2, VBOs); 
-	glDeleteProgram(shaderProgram[0]);
-	glDeleteProgram(shaderProgram[1]); 
+	glDeleteProgram(ourShader1.ID);
+	glDeleteProgram(ourShader2.ID); 
 
 
 

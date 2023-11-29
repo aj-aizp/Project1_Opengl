@@ -21,7 +21,7 @@
     <ClCompile Include="first.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="shader.cpp">
+    <ClCompile Include="shaderClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
@@ -29,5 +29,12 @@
     <ClInclude Include="Shader.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="fragment_shader1.txt" />
+    <None Include="vertex_shader1.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Text Include="fragment_shader2.txt" />
   </ItemGroup>
 </Project>
