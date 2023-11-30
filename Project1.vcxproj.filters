@@ -24,9 +24,15 @@
     <ClCompile Include="shaderClass.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="additional_stb.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="stb_image.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -36,5 +42,15 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="fragment_shader2.txt" />
+    <Text Include="texture_vertex_shader.txt" />
+    <Text Include="texture_fragment_shader.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Downloads\Texture_Practice.png">
+      <Filter>Source Files</Filter>
+    </Image>
+    <Image Include="Texture_Practice.jpg">
+      <Filter>Source Files</Filter>
+    </Image>
   </ItemGroup>
 </Project>

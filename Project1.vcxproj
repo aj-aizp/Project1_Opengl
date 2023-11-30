@@ -133,11 +133,13 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\..\..\Downloads\glad.c" />
+    <ClCompile Include="additional_stb.cpp" />
     <ClCompile Include="first.cpp" />
     <ClCompile Include="shaderClass.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="stb_image.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="fragment_shader1.txt" />
@@ -145,6 +147,12 @@
   </ItemGroup>
   <ItemGroup>
     <Text Include="fragment_shader2.txt" />
+    <Text Include="texture_fragment_shader.txt" />
+    <Text Include="texture_vertex_shader.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="..\..\..\Downloads\Texture_Practice.png" />
+    <Image Include="Texture_Practice.jpg" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

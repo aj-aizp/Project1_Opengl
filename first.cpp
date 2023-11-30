@@ -2,6 +2,7 @@
 #include <GLFW/glfw3.h>
 #include <string>
 #include <iostream>
+#include "stb_image.h"
 
 #include "Shader.h"
 //using namespace std;
@@ -9,40 +10,6 @@
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height); 
 void processInput(GLFWwindow* window); 
-
-//Shader Source code
-const char* vertexShaderSource = 
-"#version 330 core\n"
-"layout (location = 0) in vec3 aPos;\n"
-"layout (location =1) in vec3 aColor;\n"
-
-"out vec3 ourColor;\n"
-
-"void main()\n"
-"{\n"
-" gl_Position = vec4 (aPos, 1.0f);\n"
-" ourColor = aColor;\n"
-"}\0";
-
-//fragment shader source 
-const char* fragmentShaderSource1 = 
-"#version 330 core\n"
-    "out vec4 FragColor;\n"
-	"in  vec3 ourColor;\n"
-    "void main()\n"
-    "{\n"
-	"   FragColor = vec4(ourColor,1.0f);\n"
-	"}\n\0";
-
-const char* fragmentShaderSource2 = "#version 330 core\n"
-"out vec4 FragColor;\n"
-
-"uniform vec4 ourColor;\n"
-"void main()\n"
-"{\n"
-"   FragColor = ourColor;\n"
-"}\n\0";
-
 
 
 int main() {
@@ -77,6 +44,49 @@ int main() {
 	Shader ourShader1("vertex_shader1.txt","fragment_shader1.txt");   
 
 	Shader ourShader2("vertex_shader1.txt","fragment_shader2.txt"); 
+
+	Shader ourShader3("texture_vertex_shader.txt", "texture_fragment_shader.txt"); 
+
+
+	
+
+
+
+	//Creating a Texture 
+
+	unsigned int texture; 
+
+	glGenTextures(1, &texture); 
+
+	glBindTexture(GL_TEXTURE_2D, texture); 
+
+	//set texture wrapping options 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);  
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+	//loading an Image and pulling data from it 
+
+	int width, height, nrChannels; 
+
+	unsigned char *data = stbi_load("Texture_Practice.jpg", &width, &height, &nrChannels, 0); 
+
+	//std::cout << width << std::endl; 
+
+
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+
+	else {
+		std::cout << "Failed to load texture" << std::endl; 
+	}
+	
+
+	stbi_image_free(data); 
+
 
 
 	//VertexShader 
@@ -177,16 +187,14 @@ int main() {
 	};
 
 
-	// Box (Two Triangles) 
-	//float vertices[]{
-	//	0.5f,   0.5f, 0.0f,
-	//	0.5f,  -0.5f, 0.0f,
-	//	-0.5f, -0.5f, 0.0f,
-	//	-0.5f,  0.5f, 0.0f
+	// Box (Two Triangles). With Texure code, added colors and texture coordinates
+	float vertices[]{
+		0.5f,   0.5f, 0.0f, 1.0f,0.0f, 0.0f,  1.0f, 1.0f,
+		0.5f,  -0.5f, 0.0f, 0.0f, 1.0f, 0.0f, 1.0f, 0.0f,
+		-0.5f, -0.5f, 0.0f, 0.0f, 0.0f, 1.0f, 0.0f, 0.0f,
+		-0.5f,  0.5f, 0.0f, 1.0f, 1.0f, 0.0f, 0.0f, 1.0f
 
-
-
-	//};
+	};
 
 	unsigned int indices[]{
 		0,1,3,   //first triangle 
@@ -211,7 +219,7 @@ int main() {
 	//copy user defined data into the bounded buffer 
     //first arg is the buffer, second is size of data, thrid is acutal data, fourth is how to manage data (stream, static, dynamic)
     //static = data is sent once and used many times 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(firstTrivertices), firstTrivertices, GL_STATIC_DRAW); 
+	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW); 
 
 	// 0 = specifies location of position vertex attribute in vertex shader. 
 	//3 = Composed of 3 values. Vec3 
@@ -219,19 +227,27 @@ int main() {
 	//Do want data normalized? If, NO then GL_FALSE 
 	//specifies stride which is how far away the next set of values are. 
 	//position offset if data is not right at beggining of array. Void *  0 for this case 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0); 
-	glEnableVertexAttribArray(0); 
 
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
-	glEnableVertexAttribArray(1); 
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glEnableVertexAttribArray(0);
+
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 
-	glBindVertexArray(VAOs[1]);
-	glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]); 
-	glBufferData(GL_ARRAY_BUFFER, sizeof(secondTrivertices), secondTrivertices, GL_STATIC_DRAW); 
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 *sizeof(float))); 
+	glEnableVertexAttribArray(2); 
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); 
-	glEnableVertexAttribArray(0); 
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)12);
+	//glEnableVertexAttribArray(1); 
+
+
+	//glBindVertexArray(VAOs[1]);
+	//glBindBuffer(GL_ARRAY_BUFFER, VBOs[1]); 
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(secondTrivertices), secondTrivertices, GL_STATIC_DRAW); 
+
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0); 
+	//glEnableVertexAttribArray(0); 
 
 
 
@@ -271,25 +287,32 @@ int main() {
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f); //sets color state 
 		glClear(GL_COLOR_BUFFER_BIT);         //retrieve color state and use in buffer
 
-		//render 
-		ourShader1.use(); 
+
+
 		//glUseProgram(shaderProgram[0]);
+
+		//bind texture
+		glBindTexture(GL_TEXTURE_2D, texture); 
+
+		ourShader3.use(); 
+
+
 		glBindVertexArray(VAOs[0]);
-		//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);  
 		//glBindVertexArray(0); 
-		glDrawArrays(GL_TRIANGLES,0,3);                     //third parameter determines the number of vertices to render
+		//glDrawArrays(GL_TRIANGLES,0,3);                     //third parameter determines the number of vertices to render
 
 
-		float timeVal = glfwGetTime(); 
-		float greenValue = (sin(timeVal) / 2.0f) + 0.5f;
-		int vertexColorLoc = glGetUniformLocation(ourShader2.ID, "ourColor"); //get location of variable in shader
+		//float timeVal = glfwGetTime(); 
+		//float greenValue = (sin(timeVal) / 2.0f) + 0.5f;
+		//int vertexColorLoc = glGetUniformLocation(ourShader2.ID, "ourColor"); //get location of variable in shader
 
 
-		ourShader2.use();
+		//ourShader2.use();
 		//glUseProgram(shaderProgram[1]); 
-		glUniform4f(vertexColorLoc, 0.0f, greenValue, 0.0f, 1.0f);   //add green value to uniform variable in shader. Shaderprogram must be in use to be able to change uniform value.
-		glBindVertexArray(VAOs[1]); 
-		glDrawArrays(GL_TRIANGLES, 0, 3); 
+		//glUniform4f(vertexColorLoc, 0.0f, greenValue, 0.0f, 1.0f);   //add green value to uniform variable in shader. Shaderprogram must be in use to be able to change uniform value.
+		//glBindVertexArray(VAOs[1]); 
+		//glDrawArrays(GL_TRIANGLES, 0, 3); 
 
 		//check and call events and swap the buffers 
 		glfwSwapBuffers(window);         
@@ -302,6 +325,7 @@ int main() {
 	glDeleteBuffers(2, VBOs); 
 	glDeleteProgram(ourShader1.ID);
 	glDeleteProgram(ourShader2.ID); 
+	glDeleteProgram(ourShader3.ID); 
 
 
 
