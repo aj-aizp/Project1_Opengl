@@ -3,6 +3,11 @@
 #include <string>
 #include <iostream>
 #include "stb_image.h"
+#include <glm/glm/glm.hpp>
+#include <glm/glm/gtc/matrix_transform.hpp>
+#include <glm/glm/gtc/type_ptr.hpp>
+
+
 
 #include "Shader.h"
 //using namespace std;
@@ -39,6 +44,7 @@ int main() {
 		return -1; 
 	}
 
+
 	//two different shader objects that use different fragment shaders 
 
 	Shader ourShader1("vertex_shader1.txt","fragment_shader1.txt");   
@@ -46,25 +52,23 @@ int main() {
 	Shader ourShader2("vertex_shader1.txt","fragment_shader2.txt"); 
 
 	Shader ourShader3("texture_vertex_shader.txt", "texture_fragment_shader.txt"); 
-
-
 	
 
 
 
 	//Creating a Texture 
 
-	unsigned int texture; 
+	unsigned int texture1, texture2; 
 
-	glGenTextures(1, &texture); 
+	glGenTextures(1, &texture1); 
 
-	glBindTexture(GL_TEXTURE_2D, texture); 
+	glBindTexture(GL_TEXTURE_2D, texture1); 
 
 	//set texture wrapping options 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);  
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 
 	//loading an Image and pulling data from it 
 
@@ -86,6 +90,39 @@ int main() {
 	
 
 	stbi_image_free(data); 
+
+	glGenTextures(1, &texture2); 
+
+	glBindTexture(GL_TEXTURE_2D, texture2);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST); 
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST); 
+
+
+	stbi_set_flip_vertically_on_load(true);  
+	//.png have alpha channels. Need to add GL_RGBA instead of GL_RGB 
+	data = stbi_load("Union_Soldier_Texture.png", &width, &height, &nrChannels, 0); 
+
+	if (data) {
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data); 
+		glGenerateMipmap(GL_TEXTURE_2D); 
+	}
+
+	else {
+		std::cout << "Failed to load texture" << std::endl; 
+	}
+
+	stbi_image_free(data);
+
+	ourShader3.use(); 
+
+	glUniform1i(glGetUniformLocation(ourShader3.ID, "ourTexture1"), 0); 
+
+	glUniform1i(glGetUniformLocation(ourShader3.ID, "ourTexture2"), 1); 
+
+
 
 
 
@@ -292,9 +329,23 @@ int main() {
 		//glUseProgram(shaderProgram[0]);
 
 		//bind texture
-		glBindTexture(GL_TEXTURE_2D, texture); 
+		glActiveTexture(GL_TEXTURE0); 
+		glBindTexture(GL_TEXTURE_2D, texture1); 
+		glActiveTexture(GL_TEXTURE1);
+		glBindTexture(GL_TEXTURE_2D, texture2); 
+
+		//Create Transform Matrix 
+
+		glm::mat4 trans = glm::mat4(1.0f); 
+		trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0.0f)); 
+		trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));  
+
+
 
 		ourShader3.use(); 
+
+		unsigned int transformLoc = glGetUniformLocation(ourShader3.ID, "transform"); 
+		glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans)); 
 
 
 		glBindVertexArray(VAOs[0]);
