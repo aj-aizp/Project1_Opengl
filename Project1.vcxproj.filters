@@ -44,12 +44,17 @@
     <Text Include="fragment_shader2.txt" />
     <Text Include="texture_vertex_shader.txt" />
     <Text Include="texture_fragment_shader.txt" />
+    <Text Include="3D_VS.txt" />
+    <Text Include="3D_FS.txt" />
   </ItemGroup>
   <ItemGroup>
     <Image Include="..\..\..\Downloads\Texture_Practice.png">
       <Filter>Source Files</Filter>
     </Image>
     <Image Include="Texture_Practice.jpg">
+      <Filter>Source Files</Filter>
+    </Image>
+    <Image Include="Union_Soldier_Texture.png">
       <Filter>Source Files</Filter>
     </Image>
   </ItemGroup>
